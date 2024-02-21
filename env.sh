@@ -7,8 +7,9 @@
 
 srcdir="${PWD}/src"
 optdir="${PWD}/opt"
-bindir="${optdir}/bin"
-libdir="${optdir}/lib/python3.6/site-packages"
+
+bindir="${optdir}/local/bin"
+libdir="${optdir}/local/lib/python3.10/dist-packages/"
 
 #------------------------
 

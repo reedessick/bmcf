@@ -1,0 +1,76 @@
+#!/usr/bin/env python3
+
+"""a quick script that generates example input and writes it to a CSV
+"""
+__author__ = "Reed Essick (reed.essick@gmail.com)"
+
+#-------------------------------------------------
+
+import numpy as np
+
+from argparse import ArgumentParser
+
+from gwdistributions import distributions
+
+#-------------------------------------------------
+
+parser = ArgumentParser()
+
+parser.add_argument('-n', '--num-samples', default=10000, type=int)
+
+parser.add_argument('-v', '--verbose', default=False, action='store_true')
+
+args = parser.parse_args()
+
+#-------------------------------------------------
+
+# draw masses from a simple uniform distribution
+if args.verbose:
+    print('drawing %d component mass samples' % args.num_samples)
+
+dist = distributions.PowerLawComponentMass(
+    min_mass1_source =  1.0,
+    max_mass1_source = 10.0,
+    pow_mass1_source =  0.0,
+    min_mass2_source =  1.0,
+    max_mass2_source = 10.0,
+    pow_mass2_source =  0.0,
+)
+
+mass1, mass2 = np.transpose(dist.rvs(size=args.num_samples))
+
+#------------------------
+
+# draw redshifts from a uniform-in-comoving volume distribution
+if args.verbose:
+    print('drawing %d redshift samples' % args.num_samples)
+
+dist = distributions.LocalMergerRatePowerLaw1plusRedshift(
+    min_redshift = 0.0,
+    max_redshift = 4.0,
+    pow_redshift = 0.0,
+)
+
+z = dist.rvs(size=args.num_samples)[:,0]
+
+#------------------------
+
+# assign weights to make this look like a (truncated) Gaussian in component masses
+if args.verbose:
+    print('computing weights')
+
+logweight = - 0.5*(mass1-3.0)**2/3.0**2 - 0.5*(mass2-2.0)**2/1.0**2
+
+#-------------------------------------------------
+
+# write data to disk
+path = 'example-input.csv.gz'
+if args.verbose:
+    print('writing data to: '+path)
+np.savetxt(
+    path,
+    np.transpose([mass1, mass2, z, logweight]),
+    header='mass1,mass2,redshift,logweight',
+    comments='',
+    delimiter=',',
+)
