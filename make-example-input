@@ -39,6 +39,14 @@ dist = distributions.PowerLawComponentMass(
 
 mass1, mass2 = np.transpose(dist.rvs(size=args.num_samples))
 
+#-----------
+
+# assign weights to make this look like a (truncated) Gaussian in component masses
+if args.verbose:
+    print('    computing weights')
+
+logweight = - 0.5*(mass1-3.0)**2/3.0**2 - 0.5*(mass2-2.0)**2/1.0**2
+
 #------------------------
 
 # draw redshifts from a uniform-in-comoving volume distribution
@@ -47,11 +55,20 @@ if args.verbose:
 
 dist = distributions.LocalMergerRatePowerLaw1plusRedshift(
     min_redshift = 0.0,
-    max_redshift = 4.0,
+    max_redshift = 1.0,
     pow_redshift = 0.0,
 )
 
 z = dist.rvs(size=args.num_samples)[:,0]
+
+#------------------------
+
+# adding a nonsense column that will be ignored (to show that we can ignore columns)
+if args.verbose:
+    print('drawing %d random numbers' % args.num_samples)
+
+ignored = np.empty(args.num_samples, dtype=float)
+
 
 #------------------------
 
@@ -69,8 +86,8 @@ if args.verbose:
     print('writing data to: '+path)
 np.savetxt(
     path,
-    np.transpose([mass1, mass2, z, logweight]),
-    header='mass1,mass2,redshift,logweight',
+    np.transpose([mass1, mass2, z, logweight,ignored]),
+    header='mass1,mass2,redshift,logweight,ignored',
     comments='',
     delimiter=',',
 )

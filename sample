@@ -7,7 +7,7 @@
 
 mcvt-sample \
     "hlv-population.ini" \
-    10000 \
+    100 \
     --seed 1234 \
     --output-path "hlv-population.hdf5" \
     --Verbose \
@@ -15,7 +15,7 @@ mcvt-sample \
 
 mcvt-summarize-sample \
     "hlv-population.hdf5" \
-    --snr-threshold 'z'  0.0 \
+    --snr-threshold 'observed_phase_maximized_snr_net' 4.0 \
     --column mass1_source \
     --label mass1_source '$m_1^{(\mathrm{src})}$' \
     --column mass2_source \
@@ -30,18 +30,13 @@ mcvt-summarize-sample \
     --label declination '$\delta$' \
     --column inclination \
     --label inclination '$\theta_{jn}$' \
+    --column snr_net \
+    --label snr_net '$\rho_\mathrm{opt}$' \
+    --log snr_net \
+    --column observed_phase_maximized_snr_net \
+    --label observed_phase_maximized_snr_net '$\rho_\mathrm{obs}$' \
+    --log observed_phase_maximized_snr_net \
     --plot-detected-distribution \
     --include-ndet \
     --tag "hlv-population" \
     --Verbose
-
-#    --column snr_net \
-#    --label snr_net '$\rho_\mathrm{opt}$' \
-#    --log snr_net \
-#    --column observed_phase_maximized_snr_net \
-#    --label observed_phase_maximized_snr_net '$\rho_\mathrm{obs}$' \
-#    --log observed_phase_maximized_snr_net \
-#    --snr-threshold 'observed_phase_maximized_snr_net'  0.0 \
-#    --snr-threshold 'observed_phase_maximized_snr_net'  4.0 \
-#    --snr-threshold 'observed_phase_maximized_snr_net'  8.0 \
-#    --snr-threshold 'observed_phase_maximized_snr_net' 12.0 \

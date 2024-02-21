@@ -29,4 +29,4 @@ done
 popd
 
 # install libraries from pip
-#pip3 install lalsuite --prefix $optdir --ignore-installed
+pip3 install lalsuite --prefix $optdir --ignore-installed
