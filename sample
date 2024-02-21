@@ -1,0 +1,55 @@
+#!/bin/bash
+
+### a simple script to call other executables and draw samples from the requested distributions
+### Reed Essick (reed.essick@gmail.com)
+
+#--------------------------------------------
+
+NUM_SAMPLES=1000                     ### the number of samples to draw from each distribution
+NETWORKS="ce hlv"                    ### the detector networks to consider
+POPULATIONS="astrophysical detected" ### the populations to consider for each network
+
+#--------------------------------------------
+
+# iterate through detector newtorks
+for network in $NETWORKS
+do
+    # draw samples for both astrophysical and detected populations
+    for pop in $POPULATIONS
+    do
+
+        mcvt-sample \
+            "${network}-${pop}-population.ini" \
+            $NUM_SAMPLES \
+            --seed 1234 \
+            --output-path "${network}-${pop}-population.hdf5" \
+            --Verbose \
+        || exit 1
+
+        mcvt-summarize-sample \
+            "${network}-${pop}-population.hdf5" \
+            --snr-threshold 'observed_phase_maximized_snr_net'  0.0 \
+            --snr-threshold 'observed_phase_maximized_snr_net'  4.0 \
+            --snr-threshold 'observed_phase_maximized_snr_net'  8.0 \
+            --snr-threshold 'observed_phase_maximized_snr_net' 12.0 \
+            --column mass1_source \
+            --label mass1_source '$m_1^{(\mathrm{src})}$' \
+            --column mass2_source \
+            --label mass2_source '$m_2^{(\mathrm{src})}$' \
+            --column z \
+            --label z '$z$' \
+            --column chi_eff \
+            --label chi_eff '$\chi_\mathrm{eff}$' \
+            --column snr_net \
+            --label snr_net '$\rho_\mathrm{opt}$' \
+            --log snr_net \
+            --column observed_phase_maximized_snr_net \
+            --label observed_phase_maximized_snr_net '$\rho_\mathrm{obs}$' \
+            --log observed_phase_maximized_snr_net \
+            --plot-detected-distribution \
+            --include-ndet \
+            --tag "${network}-${pop}-population" \
+            --Verbose
+
+    done
+done
